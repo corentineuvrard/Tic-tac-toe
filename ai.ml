@@ -8,7 +8,7 @@
   
 ;;*)
 
-let ai() =
+(*let ai() =
   for i = 1 to (rows * columns - 1) do
     if board.(i) = "X" then
     begin
@@ -16,10 +16,11 @@ let ai() =
       begin
         draw_circle (((i-1) mod 8)*square_width+50) (((i-1) / 8)*square_height+50);
         board.(i-1) <- "O";
+        add_move (i-1);
       end;
     end;
   done;
-;;
+;;*)
 
 (*
 8 - 4 + 1 = 5
@@ -74,5 +75,16 @@ diagonales:
  2)
  3)
  4)
+
+
+
+
+
+
+
+
+ Objectifs:
+ - finir la partie si 4 symboles sont alignés
+ - faire en sorte que l'IA suive l'algo. minimax
 
 *)

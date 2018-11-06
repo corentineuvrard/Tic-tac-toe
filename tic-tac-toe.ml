@@ -85,8 +85,8 @@ let check_rows index symbol =
         end
       end
       (* If the current square is the square on the right edge *)
-      else if i = 7 then 
-      begin   
+      else if i = 7 then
+      begin
         (* If there is the same symbol on the left side square and that square has not been checked *)
         if board.(i-1).(y) = symbol && not(get_marks_rows_cols marks (i-1)) then
         (* Increment the counter and check the square on the left side of the current square *)
@@ -151,8 +151,8 @@ let check_columns index symbol =
         end
       end
       (* If the current square is the square on the top edge *)
-      else if j = 7 then 
-      begin   
+      else if j = 7 then
+      begin
         (* If there is the same symbol on the bottom side square and that square has not been checked *)
         if board.(x).(j-1) = symbol && not(get_marks_rows_cols marks (j-1)) then
         (* Increment the counter and check the square on the bottom side of the current square *)
@@ -209,11 +209,11 @@ let check_columns index symbol =
       winning_diagonal := true
     else
     begin
-      (* If the current square is a square on the left edge *)
-      if i = 0 then
+      (* If the current square is a square on the left side *)
+      if i <= 2 then
       begin
         (* If the current square is on the bottom left corner *)
-        if j = 0 then
+        if i + j <= 2 then
         begin
           (* If there is the same symbol on the top right side square and that square has not been checked *)
           if board.(i+1).(j+1) = symbol && not(get_marks_diags marks (i+1) (j+1)) then
@@ -224,8 +224,8 @@ let check_columns index symbol =
           end
         end
         (* If the current square is on the top left corner *)
-        else if j = 7 then 
-        begin   
+        else if j >= 5 then
+        begin
           (* If there is the same symbol on the bottom right side square and that square has not been checked *)
           if board.(i+1).(j-1) = symbol && not(get_marks_diags marks (i+1) (j-1)) then
           (* Increment the counter and check the square on the bottom right side of the current square *)
@@ -297,7 +297,7 @@ let set_winner() =
     if check_rows index symbol then
     begin
       (* The last player to play wins *)
-      if symbol = "X" then 
+      if symbol = "X" then
         x_wins := true
       else if symbol = "O" then
         o_wins := true
@@ -305,7 +305,7 @@ let set_winner() =
     else if check_columns index symbol then
     begin
       (* The last player to play wins *)
-      if symbol = "X" then 
+      if symbol = "X" then
         x_wins := true
       else if symbol = "O" then
         o_wins := true
@@ -348,9 +348,9 @@ let reset() =
 let main() =
   (* Create the graphics window passing the size of the window globally defined *)
   (* For Debian OS *)
-  (*let graph = " " ^ string_of_int window_size ^ "x" ^ string_of_int window_size in*)
+  let graph = " " ^ string_of_int window_size ^ "x" ^ string_of_int window_size in
   (* For Windows 8.1 OS *)
-  let graph = " " ^ string_of_int (window_size + 19) ^ "x" ^ string_of_int (window_size + 48) in
+  (*let graph = " " ^ string_of_int (window_size + 19) ^ "x" ^ string_of_int (window_size + 48) in*)
   G.set_window_title "Morpion";
   G.open_graph graph;
   grid();

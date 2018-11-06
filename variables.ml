@@ -58,8 +58,46 @@ let add_move move =
   ()
 ;;
 
+(* Array that define the type of diagonals on the board *)
+let diags_grid =
+  (* Create a matrix filled with spaces *)
+  let grid = Array.make_matrix 8 8 " " in
+  let rec loop i j =
+    if i < Array.length grid then
+    begin
+      if j < Array.length grid.(0) then
+      begin
+        (* Set the possible diagonals for the bottom left and the top right corners of the board *)
+        if (i+j) <= 2 || ((Array.length grid) - 1 - i + (Array.length grid.(0)) - 1 - j) <= 2 then
+        begin
+          grid.(i).(j) <- "/";
+          loop i (j+1)
+        end
+        (* Set the possible diagonals for the bottom right and the top left corners of the board *)
+        else if ((Array.length grid) - 1 - i + j) <= 2 || (i + (Array.length grid.(0)) - 1 - j) <= 2 then
+        begin
+          grid.(i).(j) <- "\\";
+          loop i (j+1)
+        end
+        (* Set the possible diagonals for the other squares of the board *)
+        else
+        begin
+          grid.(i).(j) <- "X";
+          loop i (j+1)
+        end
+      end
+      else
+        loop (i+1) 0
+    end
+  in
+  (* Start the loop from the bottom left square of the grid *)
+  loop 0 0;
+  (* Return the grid initialized *)
+  grid
+;;
+
 (* States of the game *)
 let draw_game = ref false;;
 let x_wins = ref false;;
 let o_wins = ref false;;
-let end_of_game = ref false;
+let end_of_game = ref false;;

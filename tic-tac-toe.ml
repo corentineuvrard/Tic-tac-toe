@@ -69,7 +69,7 @@ let check_rows index symbol =
     (* Add the x coordinate of the current square to the array marks *)
     marks.(!counter) <- i;
     (* There is a winning combination if the last element of marks is not equals to -1 *)
-    if marks.(3) != -1 then
+    if marks.(3) <> -1 then
       winning_row := true
     else
     begin
@@ -135,7 +135,7 @@ let check_columns index symbol =
     (* Add the y coordinate of the current square to the array marks *)
     marks.(!counter) <- j;
     (* There is a winning combination if the last element of marks is not equals to -1 *)
-    if marks.(3) != -1 then
+    if marks.(3) <> -1 then
       winning_column := true
     else
     begin
@@ -205,7 +205,7 @@ let check_diagonal index symbol =
     marks.(!counter).(0) <- i;
     marks.(!counter).(1) <- j;
     (* There is a winning combination if the last element of marks is not equals to [|-1;-1|] *)
-    if marks.(3).(0) != -1 && marks.(3).(1) != -1 then
+    if marks.(3).(0) <> -1 && marks.(3).(1) <> -1 then
       winning_diagonal := true
     (* Check the diagonals matrix to know what kind of diagonal combination there can be on a given square *)
     else
@@ -220,7 +220,6 @@ let check_diagonal index symbol =
           if board.(i+1).(j+1) = symbol && not(get_marks_diags marks (i+1) (j+1)) then
           (* Increment the counter and check the square on the top right side of the current square *)
           begin
-            G.draw_string "/1";
             counter := !counter + 1;
             loop (i+1) (j+1) "/";
           end
@@ -232,7 +231,6 @@ let check_diagonal index symbol =
           if board.(i-1).(j-1) = symbol && not(get_marks_diags marks (i-1) (j-1)) then
           (* Increment the counter and check the square on the bottom left side of the current square *)
           begin
-            G.draw_string "/2";
             counter := !counter + 1;
             loop (i-1) (j-1) "/"
           end
@@ -243,14 +241,12 @@ let check_diagonal index symbol =
           (* Check the bottom left side of the current square *)
           if board.(i-1).(j-1) = symbol && not(get_marks_diags marks (i-1) (j-1)) then
           begin
-            G.draw_string "/3";
             counter := !counter + 1;
             loop (i-1) (j-1) "/";
           end;
           (* Check the top right side of the current square *)
           if marks.(3) = [|-1;-1|] && board.(i+1).(j+1) = symbol && not(get_marks_diags marks (i+1) (j+1)) then
           begin
-            G.draw_string "/4";
             counter := !counter + 1;
             loop (i+1) (j+1) "/";
           end
@@ -266,7 +262,6 @@ let check_diagonal index symbol =
           if board.(i+1).(j-1) = symbol && not(get_marks_diags marks (i+1) (j-1)) then
           (* Increment the counter and check the square on the bottom right side of the current square *)
           begin
-            G.draw_string "\\1";
             counter := !counter + 1;
             loop (i+1) (j-1) "\\";
           end
@@ -278,7 +273,6 @@ let check_diagonal index symbol =
           if board.(i-1).(j+1) = symbol && not(get_marks_diags marks (i-1) (j+1)) then
           (* Increment the counter and check the square on the top left side of the current square *)
           begin
-            G.draw_string "\\2";
             counter := !counter + 1;
             loop (i-1) (j+1) "\\";
           end
@@ -289,14 +283,12 @@ let check_diagonal index symbol =
           (* Check the top left side of the current square *)
           if board.(i-1).(j+1) = symbol && not(get_marks_diags marks (i-1) (j+1)) then
           begin
-            G.draw_string "\\3";
             counter := !counter + 1;
             loop (i-1) (j+1) "\\";
           end;
           (* Check the bottom right side of the current square *)
           if marks.(3) = [|-1;-1|] && board.(i+1).(j-1) = symbol && not(get_marks_diags marks (i+1) (j-1)) then
           begin
-            G.draw_string "\\4";
             counter := !counter + 1;
             loop (i+1) (j-1) "\\";
           end
@@ -311,7 +303,6 @@ let check_diagonal index symbol =
           (* Check the top right side of the current square *)
           if diag_type <> "\\" && board.(i+1).(j+1) = symbol && not(get_marks_diags marks (i+1) (j+1)) then
           begin
-            G.draw_string "X1";
             counter := !counter + 1;
             if diag_type = " " then
               loop (i+1) (j+1) "/"
@@ -321,7 +312,6 @@ let check_diagonal index symbol =
           (* Check the bottom right side of the current square *)
           if diag_type <> "/" && marks.(3) = [|-1;-1|] && board.(i+1).(j-1) = symbol && not(get_marks_diags marks (i+1) (j-1)) then
           begin
-            G.draw_string "X2";
             counter := !counter + 1;
             if diag_type = " " then
               loop (i+1) (j-1) "\\"
@@ -335,7 +325,6 @@ let check_diagonal index symbol =
           (* Check the top left side of the current square *)
           if diag_type <> "/" && board.(i-1).(j+1) = symbol && not(get_marks_diags marks (i-1) (j+1)) then
           begin
-            G.draw_string "X3";
             counter := !counter + 1;
             if diag_type = " " then
               loop (i-1) (j+1) "\\"
@@ -345,7 +334,6 @@ let check_diagonal index symbol =
           (* Check the top right side of the current square *)
           if diag_type <> "\\" && marks.(3) = [|-1;-1|] && board.(i+1).(j+1) = symbol && not(get_marks_diags marks (i+1) (j+1)) then
           begin
-            G.draw_string "X4";
             counter := !counter + 1;
             if diag_type = " " then
               loop (i+1) (j+1) "/"
@@ -359,7 +347,6 @@ let check_diagonal index symbol =
           (* Check the top left side of the current square *)
           if diag_type <> "/" && board.(i-1).(j+1) = symbol && not(get_marks_diags marks (i-1) (j+1)) then
           begin
-            G.draw_string "X5";
             counter := !counter + 1;
             if diag_type = " " then
               loop (i-1) (j+1) "\\"
@@ -369,7 +356,6 @@ let check_diagonal index symbol =
           (* Check the bottom left side of the current square *)
           if diag_type <> "\\" && marks.(3) = [|-1;-1|] && board.(i-1).(j-1) = symbol && not(get_marks_diags marks (i-1) (j-1)) then
           begin
-            G.draw_string "X6";
             counter := !counter + 1;
             if diag_type = " " then
               loop (i-1) (j-1) "/"
@@ -383,7 +369,6 @@ let check_diagonal index symbol =
           (* Check the bottom left side of the current square *)
           if diag_type <> "\\" && board.(i-1).(j-1) = symbol && not(get_marks_diags marks (i-1) (j-1)) then
           begin
-            G.draw_string "X7";
             counter := !counter + 1;
             if diag_type = " " then
               loop (i-1) (j-1) "/"
@@ -393,7 +378,6 @@ let check_diagonal index symbol =
           (* Check the bottom right side of the current square *)
           if diag_type <> "/" && marks.(3) = [|-1;-1|] && board.(i+1).(j-1) = symbol && not(get_marks_diags marks (i+1) (j-1)) then
           begin
-            G.draw_string "X8";
             counter := !counter + 1;
             if diag_type = " " then
               loop (i+1) (j-1) "\\"
@@ -405,10 +389,11 @@ let check_diagonal index symbol =
         begin
           if diag_type <> "\\" && (board.(i-1).(j-1) = symbol || board.(i+1).(j+1) = symbol) then
           begin
+            (* Reset the counter if it is the first level of recursion *)
+            if diag_type = " " then counter := 0;
             (* Check the bottom left side of the current square *)
             if board.(i-1).(j-1) = symbol && not(get_marks_diags marks (i-1) (j-1)) then
             begin
-              G.draw_string ("X9" ^ diag_type);
               counter := !counter + 1;
               if diag_type = " " then
                 loop (i-1) (j-1) "/"
@@ -418,20 +403,20 @@ let check_diagonal index symbol =
             (* Check the top right side of the current square *)
             if marks.(3) = [|-1;-1|] && board.(i+1).(j+1) = symbol && not(get_marks_diags marks (i+1) (j+1)) then
             begin
-              G.draw_string "X10";
               counter := !counter + 1;
               if diag_type = " " then
                 loop (i+1) (j+1) "/"
               else
                 loop (i+1) (j+1) diag_type
             end;
-          end
-          else if diag_type <> "/" && (board.(i+1).(j-1) = symbol || board.(i-1).(j+1) = symbol) then
+          end;
+          if diag_type <> "/" && (board.(i+1).(j-1) = symbol || board.(i-1).(j+1) = symbol) then
           begin
+            (* Reset the counter if it is the first level of recursion *)
+            if diag_type = " " then counter := 0;
             (* Check the bottom right side of the current square *)
             if marks.(3) = [|-1;-1|] && board.(i+1).(j-1) = symbol && not(get_marks_diags marks (i+1) (j-1)) then
             begin
-              G.draw_string "X11";
               counter := !counter + 1;
               if diag_type = " " then
                 loop (i+1) (j-1) "\\"
@@ -441,7 +426,6 @@ let check_diagonal index symbol =
             (* Check the top left side of the current square *)
             if marks.(3) = [|-1;-1|] && board.(i-1).(j+1) = symbol && not(get_marks_diags marks (i-1) (j+1)) then
             begin
-              G.draw_string ("X12" ^ diag_type);
               counter := !counter + 1;
               if diag_type = " " then
                 loop (i-1) (j+1) "\\"
@@ -488,10 +472,7 @@ let set_winner() =
     begin
       (* The last player to play wins *)
       if symbol = "X" then
-      begin
-        G.draw_string "DIAGONAL";
         x_wins := true
-      end
       else if symbol = "O" then
         o_wins := true
     end

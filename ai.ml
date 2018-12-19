@@ -254,6 +254,7 @@ let rec minimax depth max_turn =
 					best_move_y := move_y;
 				end
 			end;
+			(* Undo the move *)
 			remove_last_move();
 		) !empty_squares;
 	end;

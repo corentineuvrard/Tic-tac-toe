@@ -5,7 +5,7 @@ module C = Char;;
 module L = List;;
 
 (* Calculate the score for a set of 4 neighboring squares *)
-let calculate_score_set number_of_symbols opponent =
+let calculate_score_set number_of_symbols symbol opponent =
 	let score = ref 0 in
 	if not(opponent) then
 	begin
@@ -23,7 +23,8 @@ let calculate_score_set number_of_symbols opponent =
 			score := 1000
 	end;
 	(* Return the calculated score *)
-	!score
+	if symbol = "O" then !score
+	else (-(!score))
 ;;
 
 (* Evaluate a line of the board *)
@@ -47,7 +48,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 						opponent := true;
 				done;
 				(* Calculate the score *)
-				score := !score + calculate_score_set !count !opponent;
+				score := !score + calculate_score_set !count symbol !opponent;
 			end
 		done;
 	end
@@ -69,7 +70,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 						opponent := true
 				done;
 				(* Calculate the score *)
-				score := !score + calculate_score_set !count !opponent;
+				score := !score + calculate_score_set !count symbol !opponent;
 			end
 		done;
 	end
@@ -94,7 +95,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 							opponent := true
 					done;
 					(* Calculate the score *)
-					score := !score + calculate_score_set !count !opponent;
+					score := !score + calculate_score_set !count symbol !opponent;
 				end
 			done;
 		end
@@ -115,7 +116,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 							opponent := true
 					done;
 					(* Calculate the score *)
-					score := !score + calculate_score_set !count !opponent;
+					score := !score + calculate_score_set !count symbol !opponent;
 				end
 			done;
 		end
@@ -141,7 +142,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 							opponent := true
 					done;
 					(* Calculating the score *)
-					score := !score + calculate_score_set !count !opponent;
+					score := !score + calculate_score_set !count symbol !opponent;
 				end
 			done;
 		end
@@ -162,7 +163,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 							opponent := true
 					done;
 					(* Calculating the score *)
-					score := !score + calculate_score_set !count !opponent;
+					score := !score + calculate_score_set !count symbol !opponent;
 				end
 			done;
 		end
@@ -200,19 +201,12 @@ let evaluate () =
 			end
 ;;
 
-(* Minimax algorithm *)
-let rec minimax depth max_turn =
-	let best_score = ref 0 in
+(* Minimax algorithm with alpha-beta pruning *)
+let rec minimax_alpha_beta depth max_turn alpha beta =
+	let score = ref 0 in
 	(* Best move x and y coordinates *)
 	let best_move_x = ref (-1) in
 	let best_move_y = ref (-1) in
-	(* Initialize the best score depending on the current player *)
-	if max_turn then
-		(* The AI wants to maximize its score *)
-		best_score := -1000000
-	else
-		(* The AI wants to minimize the opponent score *)
-		best_score := 1000000;
 	(* Symbol of the player who has to play the next move *)
 	let player =
 		if (String.make 1 (L.nth !moves 0).[0]) = "X" then "O"
@@ -222,51 +216,64 @@ let rec minimax depth max_turn =
 	let number_of_empty_squares = L.length !empty_squares in
 	(* The game is finished or the depth has been reached *)
 	if (number_of_empty_squares = 0) || (depth = 0) then
-		best_score := evaluate ()
+	begin
+		score := evaluate ();
+		[!score; !best_move_x; !best_move_y];
+	end
 	(* The game is not finished and the depth has not been reached *)
 	else
 	begin
 		(* Try to play in each empty square *)
 		L.iter (fun empty_square ->
-			let move_x = (C.code (empty_square.[0]) - 48) in
-			let move_y = (C.code (empty_square.[1]) - 48) in
-			(* Play a move *)
-			play_move player move_x move_y false;
-			(* If the AI has to play the next move *)
-			if player = "O" then
+			if !alpha < !beta then
 			begin
-				let current_score = L.nth (minimax (depth - 1) false) 0 in
-				if current_score > !best_score then
+				let move_x = (C.code (empty_square.[0]) - 48) in
+				let move_y = (C.code (empty_square.[1]) - 48) in
+				(* Play a move *)
+				play_move player move_x move_y false;
+				(* If the AI has to play the next move *)
+				if player = "O" then
 				begin
-					best_score := current_score;
-					best_move_x := move_x;
-					best_move_y := move_y;
+					score := L.nth (minimax_alpha_beta (depth - 1) false alpha beta) 0;
+					if !score > !alpha then
+					begin
+						alpha := !score;
+						best_move_x := move_x;
+						best_move_y := move_y;
+					end
 				end
+				(* If the opponent has to play the next move *)
+				else
+				begin
+					score := L.nth (minimax_alpha_beta (depth - 1) true alpha beta) 0;
+					if !score < !beta then
+					begin
+						beta := !score;
+						best_move_x := move_x;
+						best_move_y := move_y;
+					end
+				end;
+				(* Undo the move *)
+				remove_last_move();
 			end
-			(* If the opponent has to play the next move *)
-			else
-			begin
-				let current_score = L.nth (minimax (depth - 1) true) 0 in
-				if current_score < !best_score then
-				begin
-					best_score := (-current_score);
-					best_move_x := move_x;
-					best_move_y := move_y;
-				end
-			end;
-			remove_last_move();
 		) !empty_squares;
-	end;
-	[!best_score; !best_move_x; !best_move_y]
+		(* Return the best score and the best move's coordinates *)
+		if player = "O" then
+			[!alpha; !best_move_x; !best_move_y]
+		else
+			[!beta; !best_move_x; !best_move_y]
+  end;
 ;;
 
 (* Main function of the AI *)
 let ai() =
+	let alpha = ref (-1000000) in
+	let beta = ref 1000000 in
 	(* Get the result of the minimax function *)
-	let minimax_result = minimax 2 true in
+	let minimax_alpha_beta_result = minimax_alpha_beta 2 true alpha beta in
 	(* Get the coordinates of the best move *)
-	let move_x = L.nth minimax_result 1 in
-	let move_y = L.nth minimax_result 2 in
+	let move_x = L.nth minimax_alpha_beta_result 1 in
+	let move_y = L.nth minimax_alpha_beta_result 2 in
 	(* Play the move *)
 	play_move "O" move_x move_y true;
 	(* It is now the player turn *)

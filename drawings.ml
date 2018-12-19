@@ -1,7 +1,6 @@
-#load "graphics.cma";;
-module G = Graphics;;
+open Variables;;
 
-#use "variables.ml";;
+module G = Graphics;;
 
 (* Draw a grid *)
 let grid() =

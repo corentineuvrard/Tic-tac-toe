@@ -1,10 +1,15 @@
 module A = Array;;
-module L = List;;
 
 (* Global variables *)
 
 (* Size of the graphics window *)
 let window_size = 800;;
+
+(* Graphic for Debian OS *)
+let graphics_debian = " " ^ string_of_int window_size ^ "x" ^ string_of_int (window_size + 100);;
+
+(* Graphic for Windows 8.1 OS *)
+let graphics_windows = " " ^ string_of_int (window_size + 19) ^ "x" ^ string_of_int (window_size + 148);;
 
 (* Number of rows and columns *)
 let rows = 8;;
@@ -20,43 +25,17 @@ let square_height = window_size / columns;;
 (* Define whether a square is marked or not *)
 let board = A.make_matrix rows columns " ";;
 
-(* Update the list of the empty squares *)
-let update_empty_squares a =
-  (* Run through each square of the board *)
-  let rec loop i j =
-      (* Return an empty list when all squares of the board have been checked *)
-      if i >= A.length a then
-        []
-      else if j >= A.length a.(0) then
-        loop (i+1) 0
-      else
-        (* Check if the square is empty at the given index *)
-        let symbol = a.(i).(j) in
-        if symbol = " " then
-          (* Concatenate the current index with the next matching indexes recursively *)
-          let element = (string_of_int i) ^ (string_of_int j) in
-          element::(loop i (j+1))
-        else
-          (* Check the conditions recursively for the next indexes *)
-          loop i (j+1)
-  in
-  (* Start checking from the index 0 0 *)
-  loop 0 0
-;;
+(* Define who has to play the next move *)
+let player_turn = ref true;;
 
-(* List of the empty squares *)
-let empty_squares =
-  update_empty_squares board
-;;
+(* Define if there is a winner *)
+let win = ref false;;
 
-(* Array of moves that have been played in the game *)
-let moves = ref [];;
-
-(* Add the last move to the array of moves *)
-let add_move move =
-  moves := [move] @ !moves;
-  ()
-;;
+(* States of the game *)
+let draw_game = ref false;;
+let x_wins = ref false;;
+let o_wins = ref false;;
+let end_of_game = ref false;;
 
 (* Array that define the type of diagonals on the board *)
 let diags_matrix =
@@ -96,8 +75,25 @@ let diags_matrix =
   grid
 ;;
 
-(* States of the game *)
-let draw_game = ref false;;
-let x_wins = ref false;;
-let o_wins = ref false;;
-let end_of_game = ref false;;
+(* List of moves that have been played in the game *)
+let moves : string list ref = ref [];;
+
+(* List of the empty squares of the board *)
+let empty_squares = ref [];;
+
+let update_empty_squares() =
+	(* Initialize the list *)
+	empty_squares := [];
+	(* Run through each square of the board *)
+	for i = 0 to (rows - 1) do
+		for j = 0 to (columns - 1) do
+			if board.(i).(j) = " " then
+			begin
+				(* Coordinates of the empty square *)
+				let coordinates = string_of_int i ^ string_of_int j in
+				(* Add the coordinates of the empty square to the list of empty squares *)
+				empty_squares := !empty_squares @ [coordinates];
+			end;
+		done;
+	done;
+;;

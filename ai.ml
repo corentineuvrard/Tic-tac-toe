@@ -179,26 +179,22 @@ let evaluate () =
 		| h::t ->
 			begin
 				let score = ref 0 in
-				(* Get the symbol of the last move *)
-				let symbol = String.make 1 (L.nth !moves 0).[0] in
-				(* Define the opponent symbol according to the current player symbol *)
-				let opponent_symbol =
-					if symbol = "X" then "O"
-					else "X"
-				in
+				(* Symbol of each player *)
+				let ai_symbol = "O" in
+				let player_symbol = "X" in
 				(* Evaluate rows and columns *)
 				for i = 0 to 7 do
-					score := !score + evaluate_line "-" i symbol opponent_symbol;
-					score := !score + evaluate_line "|" i symbol opponent_symbol;
-					score := !score + evaluate_line "|" i opponent_symbol symbol;
-					score := !score + evaluate_line "|" i opponent_symbol symbol;
+					score := !score + evaluate_line "-" i ai_symbol player_symbol;
+					score := !score + evaluate_line "|" i ai_symbol player_symbol;
+					score := !score + evaluate_line "-" i player_symbol ai_symbol;
+					score := !score + evaluate_line "|" i player_symbol ai_symbol;
 				done;
 				(* Evaluate diagonals and anti-diagonals *)
 				for i = -4 to 4 do
-					score := !score + evaluate_line "/" i symbol opponent_symbol;
-					score := !score + evaluate_line "\\" i symbol opponent_symbol;
-					score := !score + evaluate_line "/" i opponent_symbol symbol;
-					score := !score + evaluate_line "\\" i opponent_symbol symbol;
+					score := !score + evaluate_line "/" i ai_symbol player_symbol;
+					score := !score + evaluate_line "\\" i ai_symbol player_symbol;
+					score := !score + evaluate_line "/" i player_symbol ai_symbol;
+					score := !score + evaluate_line "\\" i player_symbol ai_symbol;
 				done;
 				(* Return the evaluated score *)
 				!score;

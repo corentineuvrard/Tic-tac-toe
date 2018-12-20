@@ -5,7 +5,7 @@ module C = Char;;
 module L = List;;
 
 (* Calculate the score for a set of 4 neighboring squares *)
-let calculate_score_set number_of_symbols opponent =
+let calculate_score_set number_of_symbols symbol opponent =
 	let score = ref 0 in
 	if not(opponent) then
 	begin
@@ -23,7 +23,8 @@ let calculate_score_set number_of_symbols opponent =
 			score := 1000
 	end;
 	(* Return the calculated score *)
-	!score
+	if symbol = "O" then !score
+	else (-(!score))
 ;;
 
 (* Evaluate a line of the board *)
@@ -47,7 +48,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 						opponent := true;
 				done;
 				(* Calculate the score *)
-				score := !score + calculate_score_set !count !opponent;
+				score := !score + calculate_score_set !count symbol !opponent;
 			end
 		done;
 	end
@@ -69,7 +70,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 						opponent := true
 				done;
 				(* Calculate the score *)
-				score := !score + calculate_score_set !count !opponent;
+				score := !score + calculate_score_set !count symbol !opponent;
 			end
 		done;
 	end
@@ -94,7 +95,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 							opponent := true
 					done;
 					(* Calculate the score *)
-					score := !score + calculate_score_set !count !opponent;
+					score := !score + calculate_score_set !count symbol !opponent;
 				end
 			done;
 		end
@@ -115,7 +116,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 							opponent := true
 					done;
 					(* Calculate the score *)
-					score := !score + calculate_score_set !count !opponent;
+					score := !score + calculate_score_set !count symbol !opponent;
 				end
 			done;
 		end
@@ -141,7 +142,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 							opponent := true
 					done;
 					(* Calculating the score *)
-					score := !score + calculate_score_set !count !opponent;
+					score := !score + calculate_score_set !count symbol !opponent;
 				end
 			done;
 		end
@@ -162,7 +163,7 @@ let evaluate_line line_type id_line symbol opponent_symbol =
 							opponent := true
 					done;
 					(* Calculating the score *)
-					score := !score + calculate_score_set !count !opponent;
+					score := !score + calculate_score_set !count symbol !opponent;
 				end
 			done;
 		end
@@ -189,11 +190,15 @@ let evaluate () =
 				for i = 0 to 7 do
 					score := !score + evaluate_line "-" i symbol opponent_symbol;
 					score := !score + evaluate_line "|" i symbol opponent_symbol;
+					score := !score + evaluate_line "|" i opponent_symbol symbol;
+					score := !score + evaluate_line "|" i opponent_symbol symbol;
 				done;
 				(* Evaluate diagonals and anti-diagonals *)
 				for i = -4 to 4 do
 					score := !score + evaluate_line "/" i symbol opponent_symbol;
 					score := !score + evaluate_line "\\" i symbol opponent_symbol;
+					score := !score + evaluate_line "/" i opponent_symbol symbol;
+					score := !score + evaluate_line "\\" i opponent_symbol symbol;
 				done;
 				(* Return the evaluated score *)
 				!score;
@@ -233,7 +238,7 @@ let rec minimax depth max_turn =
 			(* Play a move *)
 			play_move player move_x move_y false;
 			(* If the AI has to play the next move *)
-			if player = "O" then
+			if max_turn then
 			begin
 				let current_score = L.nth (minimax (depth - 1) false) 0 in
 				if current_score > !best_score then
@@ -249,7 +254,7 @@ let rec minimax depth max_turn =
 				let current_score = L.nth (minimax (depth - 1) true) 0 in
 				if current_score < !best_score then
 				begin
-					best_score := (-current_score);
+					best_score := current_score;
 					best_move_x := move_x;
 					best_move_y := move_y;
 				end
